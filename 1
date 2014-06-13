@@ -1,0 +1,160 @@
+#10x16
+
+level = [
+    "          ",
+    " 11 11111 ",
+    " 11 1   1 ",
+    "    1 2 1 ",
+    "    1   1 ",
+    "    11111 ",
+    "          ",
+    "          ",
+    " 11111111 ",
+    " 1      1 ",
+    " 1 1111 1 ",
+    " 1 1221 1 ",
+    " 1 1111 1 ",
+    " 1      1 ",
+    " 11111111 ",
+    "          ",
+]
+
+
+
+class Node(object):
+    _id = 0
+    def __init__(self, symbol):
+        self.symbol = symbol
+        self.neighbors = []
+        self._id = Node._id
+        Node._id += 1
+
+    def connect(self, other):
+        """Make an undirected edge between two Nodes"""
+        if other in self.neighbors:
+            return # Already connected
+        print "Connecting", self, "to", other
+        self.neighbors.append(other)
+        other.neighbors.append(self)
+
+    def disconnect(self, other):
+        if other not in self.neighbors:
+            return # Already disconnected
+
+        # offset = self.neighbors.index(other)
+        print "Disconnecting",self,"from",other
+        self.neighbors = filter(lambda x:x != other, self.neighbors)
+        other.neighbors = filter(lambda x:x != self, other.neighbors)
+
+    def __str__(self):
+        return "[{} {}]".format(self.symbol, self._id)
+    def __repr__(self):
+        return str(self)
+
+class Graph(object):
+    def __init__(self):
+        self.nodes = []
+
+    def newNode(self, symbol):
+        node = Node(symbol)
+        self.nodes.append(node)
+        return node
+
+    def draw(self):
+        for node in self.nodes:
+            out = "{}| ".format(str(node))
+            out += " ".join(map(str, node.neighbors))
+            print out
+
+def test():
+    g = Graph()
+    a = g.newNode('b')
+    b = g.newNode('r')
+    c = g.newNode('R')
+    d = g.newNode('k')
+    a.connect(b)
+    a.connect(c)
+    a.connect(d)
+    d.connect(b)
+    d.connect(c)
+
+    g.draw()
+
+
+def build_graph(level):
+    graph = Graph()
+
+
+    # create the nodes in the level
+    # and store them in a 2d grid
+    nodes = []
+    for row in level:
+        node_row = []
+        nodes.append(node_row)
+        for val in row:
+            node = graph.newNode(val)
+            node_row.append(node)
+
+    # Connect all of the nodes to their neighbors
+    rows = len(level)
+    cols = len(level[0])
+    for row in xrange(rows):
+        for col in xrange(cols):
+            cur = nodes[row][col]
+            if row != 0:
+                cur.connect(nodes[row-1][col])
+            if col != 0:
+                cur.connect(nodes[row][col-1])
+            if row != rows-1:
+                cur.connect(nodes[row+1][col])
+            if col != cols-1:
+                cur.connect(nodes[row][col+1])
+
+    # compact all of the nodes by value
+    #compact(nodes[0][0])
+    return graph
+
+def compact(graph):
+    # compact the graph from
+    # 0-0-0
+    # | | |
+    # 0-1-1
+    # | | |
+    # 0-1-2
+    #
+    # into
+    # 0-1-2
+    # by joining neighboring, same symbol nodes
+    import time
+    for node in graph.nodes:
+        #print "Merging", node
+        for neighbor in list(node.neighbors): # mutating this list, make a copy
+
+            if neighbor.symbol == node.symbol:
+                # Found a mergable node, move all of its children to node
+                # and orphan it.
+                neighbor.disconnect(node)
+                for grandchild in list(neighbor.neighbors):
+                    if grandchild == node:
+                        continue
+                    # node - neighbor - grandchild
+                    # into
+                    # node - grandchild   neighbor
+                    node.connect(grandchild)
+                    neighbor.disconnect(grandchild)
+        #print "Merge done:"
+        #graph.draw()
+        #print "---"
+#graph = build_graph([
+#    "   ",
+#    " 11",
+#    " 12",
+#])
+graph = build_graph(level)
+graph.draw()
+compact(graph)
+#graph.draw()
+for node in graph.nodes:
+    if node.neighbors:
+        print str(node) +":" + " ".join(map(str, node.neighbors))
+
