@@ -9,8 +9,8 @@ define(["promise", "app/cell"], function(Promise, Cell) {
       row = [];
       grid.push(row);
       for(c = 0 ; c < 16 ; c++) {
+        var cell = new Cell(level[r][c]);
         row.push(cell);
-        var cell = new Cell(grid[r][c]);
 
         if(r !== 0) {
           cell.up = grid[r-1][c];
