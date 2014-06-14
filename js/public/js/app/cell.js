@@ -37,12 +37,14 @@ define([], function() {
   };
 
   Cell.prototype.onFill = function (){
+    // set the fill start time here.
     var self = this;
     function possiblyFill(node, dir) {
       if (node && node.fill_dir === DIR.NONE && node.color === self.color) {
         node.startFill(self.fill_color, dir, Math.max(.05, self.fill_time * .9));
       }
     }
+
     possiblyFill(this.up, Cell.DIR.UP);
     possiblyFill(this.left, Cell.DIR.LEFT);
     possiblyFill(this.down, Cell.DIR.DOWN);
@@ -63,15 +65,18 @@ define([], function() {
     this.fill_percent = (timestamp - this.fill_start_time) % this.fill_time * (1/this.fill_time);
   };
 
-  Cell.prototype.startFill = function(color, dir, time) {
+  Cell.prototype.startFill = function(color, dir, time, start_time) {
     if (color === this.color) {
       return;
     }
     if (time === undefined) {
       time = FILL_TIME;
     }
+    if (start_time === undefined) {
+      start_time = +new Date()/1000;
+    }
     this.fill_time = time;
-    this.fill_start_time = +new Date()/1000;
+    this.fill_start_time = start_time;
     this.fill_color = color;
     this.fill_dir = dir;
 
