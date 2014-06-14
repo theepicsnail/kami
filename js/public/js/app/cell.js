@@ -81,13 +81,18 @@ define([], function() {
     // and a delta angle (between each colors hue
     var colors = [];
     var offset = Math.random(); // 0 to 1
-    var delta = Math.random()*0.8 + 0.1;
-    console.log(offset, delta);
-    var i;
+    var delta = 2.4 * (Math.random() > .5? 1:-1);//Math.random()*0.8 + 0.1;
+
+    var delta_sat = .618;
+    var offset_sat = Math.random();
+
+   var i;
     for(i = 0 ; i < 4 ; i ++) {
       var angle = offset + delta * i;
       angle = Math.floor(angle * 360) % 360;
-      colors.push("hsl(" + angle + ",80%,50%)");
+      var sat = Math.floor((delta_sat * i + offset_sat) % 1 * 60 + 20); //20% - 80%
+      console.log(sat);
+      colors.push("hsl(" + angle + "," + sat + "%,50%)");
     }
     console.log(colors);
     return colors;
