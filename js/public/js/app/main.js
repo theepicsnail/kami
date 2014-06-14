@@ -1,7 +1,33 @@
 define(["promise", "app/cell"], function(Promise, Cell) {
 
+  function loadLevel(level) {
+    // 2d int array
+    // return a 2d array of cells that are wired together
+    var grid = [];
+    var r, row, c;
+    for(r = 0 ; r < 10 ; r ++) {
+      row = [];
+      grid.push(row);
+      for(c = 0 ; c < 16 ; c++) {
+        row.push(cell);
+        var cell = new Cell(grid[r][c]);
+
+        if(r !== 0) {
+          cell.up = grid[r-1][c];
+          grid[r-1][c].down = cell;
+        }
+        if(c !== 0) {
+          cell.left = row[c-1];
+          row[c-1].right = cell;
+        }
+      }
+    }
+    return grid;
+  }
+
+
   var k=0, r=1, y=2, w=3;
-  var grid = [
+  var grid = loadLevel([
     [w,w,w,k,k,k,k,k,k,y,y,y,r,r,r,r],
     [w,w,w,k,k,k,k,k,k,y,y,y,r,r,r,r],
     [k,k,k,k,r,r,r,k,k,r,r,r,y,y,y,y],
@@ -12,26 +38,9 @@ define(["promise", "app/cell"], function(Promise, Cell) {
     [y,y,y,y,y,w,w,w,y,y,y,y,r,r,r,k],
     [r,r,r,r,y,w,w,w,y,k,k,k,r,r,r,k],
     [r,r,r,r,r,r,r,r,r,k,k,k,k,k,k,k],
-  ];
-  (function(){
-    var r, row, c;
-    for(r = 0 ; r < 10 ; r ++) {
-      row = [];
-      for(c = 0 ; c < 16 ; c++) {
-        var cell = new Cell(grid[r][c]);
-        if(r !== 0) {
-          cell.up = grid[r-1][c];
-          grid[r-1][c].down = cell;
-        }
-        if(c !== 0) {
-          cell.left = row[c-1];
-          row[c-1].right = cell;
-        }
-        row.push(cell);
-      }
-      grid[r]=row;
-    }
-  }());
+  ]);
+
+
   var sel_color = 0;
   var width, height;
   var canvas;
