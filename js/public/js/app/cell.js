@@ -72,31 +72,29 @@ define([], function() {
     this.fill_dir = dir;
 
   };
-  Cell.colors = [
-//    "#F88", "#8F8", "#88F",
-    "#800", "#080", "#008",
-    "#A00", "#840", "#A80",
-    "#444", "#048", "A84",
-  ];
-  Cell.DIR = DIR;
 
-  function shuffle(o){ //v1.0
-    var j, x, i;
-    for(i = o.length-1 ;i; i--) {
-      j = Math.floor(Math.random() * i);
-      x = o[--i];
-      o[i] = o[j];
-      o[j] = x;
+
+  function generateColors() {
+    console.log("A");
+    // Pick 4 random kind of palleted colors
+    // This is done by picking a random angle in the hue spectrum
+    // and a delta angle (between each colors hue
+    var colors = [];
+    var offset = Math.random(); // 0 to 1
+    var delta = Math.random()*0.8 + 0.1;
+    console.log(offset, delta);
+    var i;
+    for(i = 0 ; i < 4 ; i ++) {
+      var angle = offset + delta * i;
+      angle = Math.floor(angle * 360) % 360;
+      colors.push("hsl(" + angle + ",80%,50%)");
     }
-    return o;
-  }
+    console.log(colors);
+    return colors;
+  };
 
-  Cell.colors = shuffle(Cell.colors);
-  Cell.colors = [
-    Cell.colors[0],
-    Cell.colors[1],
-    Cell.colors[2],
-    Cell.colors[3]];
+  Cell.colors = generateColors();
+  Cell.DIR = DIR;
 
   return Cell;
 });
