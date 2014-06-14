@@ -48,7 +48,7 @@ define(["promise", "app/cell"], function(Promise, Cell) {
   var y_gap = 0;
   var x_gap = 0;
   var size; // size of each cell
-
+  var winScreen = false;
   var last_percent = 1;
   function onFrame() {
     var timestamp = +new Date()/1000;
@@ -92,12 +92,43 @@ define(["promise", "app/cell"], function(Promise, Cell) {
       ctx.fillRect(2-2*size, 2*row*size+2, 2*size-4, 2*size-4);
     }
 
+    var settled = true, won = true, win_color = grid[0][0].color;
     for(row = 0 ; row < 10 ; row ++) {
       for(col = 0 ; col < 16 ; col ++) {
-        grid[row][col].draw(ctx, col * size, row * size, size, size);
+        cell = grid[row][col]
+        cell.draw(ctx, col * size, row * size, size, size);
+        if(settled) {
+          settled = cell.fill_dir == Cell.DIR.NONE;
+          if (won) {
+            won = cell.color == win_color;
+          }
+        }
       }
     }
+
+    //console.log(settled, won);
+    if(settled && won) {
+      winScreen = true;
+    }
+    if(winScreen) {
+      onWin();
+    }
+
   }
+
+  function onWin() {
+    var color = Math.floor( Math.random() * 4);
+    grid[0][0].startFill(color, Cell.DIR.CENTER);
+    grid[9][0].startFill(color, Cell.DIR.CENTER);
+    grid[0][15].startFill(color, Cell.DIR.CENTER);
+    grid[9][15].startFill(color, Cell.DIR.CENTER);
+
+    ctx.font = size + "pt Calibri";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "black";
+    ctx.fillText("WIN", size * 8, size * 5);
+  }
+
 
   function select(x, y) {
     var col = Math.floor((x - x_gap)/size);
