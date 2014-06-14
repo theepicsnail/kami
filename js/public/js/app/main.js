@@ -95,12 +95,12 @@ define(["promise", "app/cell"], function(Promise, Cell) {
     var settled = true, won = true, win_color = grid[0][0].color;
     for(row = 0 ; row < 10 ; row ++) {
       for(col = 0 ; col < 16 ; col ++) {
-        cell = grid[row][col]
+        cell = grid[row][col];
         cell.draw(ctx, col * size, row * size, size, size);
         if(settled) {
-          settled = cell.fill_dir == Cell.DIR.NONE;
+          settled = cell.fill_dir === Cell.DIR.NONE;
           if (won) {
-            won = cell.color == win_color;
+            won = cell.color === win_color;
           }
         }
       }
@@ -118,6 +118,7 @@ define(["promise", "app/cell"], function(Promise, Cell) {
 
   function onWin() {
     var color = Math.floor( Math.random() * 4);
+    // setting fill time here will let the win screen remain in sync.
     grid[0][0].startFill(color, Cell.DIR.CENTER);
     grid[9][0].startFill(color, Cell.DIR.CENTER);
     grid[0][15].startFill(color, Cell.DIR.CENTER);
