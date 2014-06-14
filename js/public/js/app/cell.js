@@ -40,7 +40,7 @@ define([], function() {
     var self = this;
     function possiblyFill(node, dir) {
       if (node && node.fill_dir === DIR.NONE && node.color === self.color) {
-        node.startFill(self.fill_color, dir);
+        node.startFill(self.fill_color, dir, Math.max(.05, self.fill_time * .9));
       }
     }
     possiblyFill(this.up, Cell.DIR.UP);
@@ -55,18 +55,22 @@ define([], function() {
     }
     var dt = timestamp - this.fill_start_time;
     // console.log(dt > 1, this.fill_dir);
-    if( dt > FILL_TIME) {
+    if( dt > this.fill_time) {
       this.onFill();
       this.fill_dir = DIR.NONE;
       this.color = this.fill_color;
     }
-    this.fill_percent = (timestamp - this.fill_start_time) % FILL_TIME * (1/FILL_TIME);
+    this.fill_percent = (timestamp - this.fill_start_time) % this.fill_time * (1/this.fill_time);
   };
 
-  Cell.prototype.startFill = function(color, dir) {
+  Cell.prototype.startFill = function(color, dir, time) {
     if (color === this.color) {
       return;
     }
+    if (time === undefined) {
+      time = FILL_TIME;
+    }
+    this.fill_time = time;
     this.fill_start_time = +new Date()/1000;
     this.fill_color = color;
     this.fill_dir = dir;
