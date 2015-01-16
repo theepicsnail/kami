@@ -217,7 +217,7 @@ def sort_by_max_distance(moves, graph):
     annotated_moves = []
     for move in moves:
         annotated_moves.append((max_distance(move[1], graph), move))
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     return map(lambda (x,y):y, sorted(annotated_moves)) # sort and strip annotation
 
 def getOrderedMoves(graph):

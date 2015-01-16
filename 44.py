@@ -110,6 +110,9 @@ def graphviz(graph):
 
     def attrLine(node):
         gap = .51
+        return "{}[shape=square,style=filled,fillcolor={}]".format(
+            node._id, symbolattrs[node.symbol])
+
         return "{}[shape=square,style=filled,fillcolor={},pos=\"{},{}!\";fixedsize=true]".format(
             node._id, symbolattrs[node.symbol], node._id % 10 * gap, node._id/10 * -1 * gap)
     def neighborLine(node):
@@ -119,11 +122,12 @@ def graphviz(graph):
             if neighbor._id < node._id: # only make one edge per connection
                 continue
             edges.append(fmt % neighbor._id)
-
-        return ";".join(edges)
+        if edges:
+            return ";".join(edges) + ";"
+        return ""
 
     attrs = ";".join(map(attrLine, graph.nodes))
-    edges = ";".join(map(neighborLine, graph.nodes))
+    edges = "".join(map(neighborLine, graph.nodes))
     out = "graph g{%s;%s}" % (attrs,edges)
     return out
 
@@ -186,9 +190,9 @@ graph = build_graph(level)
 #    "b": "[shape=circle,style=filled,fillcolor=blue]",
 #    "k": "[shape=circle,style=filled,fillcolor=gray]",
 #})
-print graphviz(graph)
 compact(graph)
 graph.removeOrphans()
+print graphviz(graph)
 #graph.draw()
 # display non-orphaned nodes:
 #for node in graph.nodes:
